@@ -1,3 +1,5 @@
+"""Convert service-layer exceptions into HTTP responses."""
+
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 
@@ -17,6 +19,7 @@ from app.core.exceptions import (
 
 
 def handle_user_service_exception(exc: AppServiceError) -> None:
+    """Map user-related service exceptions to HTTP errors."""
     if isinstance(exc, UserNotFoundError):
         raise HTTPException(status_code=404, detail="User not found")
     
@@ -27,6 +30,7 @@ def handle_user_service_exception(exc: AppServiceError) -> None:
 
 
 def handle_auth_service_exception(exc: AppServiceError) -> None:
+    """Map authentication-related service exceptions to HTTP errors."""
     if isinstance(exc, InvalidCredentialsError):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
@@ -40,6 +44,7 @@ def handle_auth_service_exception(exc: AppServiceError) -> None:
 
 
 def handle_authorization_exception(exc: AppServiceError) -> None:
+    """Map authorization-related service exceptions to HTTP errors."""
     if isinstance(exc, PermissionDeniedError):
         raise HTTPException(status_code=403, detail="Permission denied")
     
@@ -47,6 +52,8 @@ def handle_authorization_exception(exc: AppServiceError) -> None:
 
 
 def handle_service_exception(exc: AppServiceError) -> None:
+    # Handle specific business exceptions first
+
     if isinstance(exc, (UserNotFoundError, UserEmailAlreadyExistsError)):
         handle_user_service_exception(exc)
 
@@ -82,7 +89,9 @@ async def app_service_exception_handler(
     request: Request, 
     exc: Exception,
 ) -> JSONResponse:
+    # Entry point for FastAPI global exception handling
     if not isinstance(exc, AppServiceError):
+        # Re-raise unexpected exceptions
         raise exc
     
     try:

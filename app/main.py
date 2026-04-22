@@ -1,3 +1,5 @@
+"""FastAPI application entry point."""
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -12,6 +14,8 @@ from app.api.error_handlers import app_service_exception_handler
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Application startup and shutdown lifecycle management
+    # Create tables at startup
     Base.metadata.create_all(bind=engine)
     yield
 
@@ -23,6 +27,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Register the global handler for service-layer exceptions
 app.add_exception_handler(AppServiceError, app_service_exception_handler)
 
 
@@ -35,4 +40,5 @@ def root():
     }
 
 
+# Mount all API v1 routes under the configured prefix
 app.include_router(api_router, prefix=settings.api_v1_prefix)

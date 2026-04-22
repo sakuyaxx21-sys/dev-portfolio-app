@@ -15,7 +15,7 @@ env/
 # Environment Files
 # =========================
 .env
-.env.ec2
+.env.*
 
 # Keep .env.example for reference and sharing
 !.env.example
@@ -49,12 +49,14 @@ Thumbs.db
 # =========================
 # Logs
 # =========================
+logs/
 *.log
 
 # =========================
 # Docker
 # =========================
 *.pid
+docker-compose.override.yml
 
 # =========================
 # Build / Packaging
